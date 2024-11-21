@@ -1,25 +1,27 @@
 import React, { useState } from "react";
 import {
   Button,
-  Dimensions,
   Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  View
+  View,
 } from "react-native";
 import axios from "axios";
 import { API_KEY } from "@env";
 
 const getCatPhotos = async (limit: number = 5) => {
   try {
-    const response = await axios.get("https://api.thecatapi.com/v1/images/search", {
-      params: { limit },
-      headers: {
-        "x-api-key": API_KEY,
-      },
-    });
+    const response = await axios.get(
+      "https://api.thecatapi.com/v1/images/search",
+      {
+        params: { limit },
+        headers: {
+          "x-api-key": API_KEY,
+        },
+      }
+    );
     console.log("Resposta da API:", response.data);
     return response.data;
   } catch (error) {
@@ -28,10 +30,8 @@ const getCatPhotos = async (limit: number = 5) => {
   }
 };
 
-
 const App = () => {
   const [photos, setPhotos] = useState<string[]>([]);
-  const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 
   const fetchPhotos = async () => {
     try {
@@ -44,21 +44,25 @@ const App = () => {
     }
   };
 
-  const columnWidth = windowWidth < 600 ? '100%' : '23%';
-
-
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Galeria de Gatinhos</Text>
-      <Button title="Carregar Fotos de Gatos" onPress={fetchPhotos} />
+      <Button 
+      title="Carregar Fotos de Gatos" 
+      onPress={fetchPhotos} 
+      color="#ff477e"/>
       <ScrollView style={styles.scrollContainer}>
         {photos.length === 0 ? (
-          <Text style={styles.placeholderText}>Clique no botão para carregar as fotos!</Text>
+          <Text style={styles.placeholderText}>
+            Clique no botão para carregar as fotos!
+          </Text>
         ) : (
           <View style={styles.gridContainer}>
             {photos.map((url, index) => (
-              <View key={index} style={[styles.card, { width: columnWidth }]}>
-                <Image source={{ uri: url }} style={styles.image} />
+              <View key={index} style={styles.card}>
+                <View style={styles.imgContainer}>
+                  <Image source={{ uri: url }} style={styles.image} />
+                </View>
               </View>
             ))}
           </View>
@@ -76,31 +80,39 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 50,
     fontWeight: "bold",
     marginBottom: 16,
+    fontFamily: "Lora"
   },
   scrollContainer: {
     flex: 1,
     width: "100%",
   },
   gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    width: "100%",
     padding: 8,
   },
   card: {
+    width: "23%", //Calculo simples para deixar 4 items por linha
     marginBottom: 10,
-    marginHorizontal: '1%',
+    marginHorizontal: "1%",
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
+  },
+  imgContainer: {
+    width: "100%",
+    height: 0,
+    paddingBottom: "100%",
+    position: "relative",
   },
   image: {
+    position: "absolute",
     width: "100%",
-    height: 200,
-    marginBottom: 10,
+    height: "100%",
     borderRadius: 10,
   },
   placeholderText: {
