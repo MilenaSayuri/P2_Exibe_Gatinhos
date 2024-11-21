@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import {
+  Button,
+  Dimensions,
+  Image,
   SafeAreaView,
   ScrollView,
-  Image,
-  Button,
-  Text,
   StyleSheet,
+  Text,
+  View
 } from "react-native";
 import axios from "axios";
 import { API_KEY } from "@env";
@@ -29,6 +31,7 @@ const getCatPhotos = async (limit: number = 5) => {
 
 const App = () => {
   const [photos, setPhotos] = useState<string[]>([]);
+  const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
 
   const fetchPhotos = async () => {
     try {
@@ -40,7 +43,9 @@ const App = () => {
       console.error("Erro ao carregar fotos:", error);
     }
   };
-  
+
+  const columnWidth = windowWidth < 600 ? '100%' : '23%';
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -48,13 +53,15 @@ const App = () => {
       <Button title="Carregar Fotos de Gatos" onPress={fetchPhotos} />
       <ScrollView style={styles.scrollContainer}>
         {photos.length === 0 ? (
-          <Text style={styles.placeholderText}>
-            Clique no botão para carregar as fotos!
-          </Text>
+          <Text style={styles.placeholderText}>Clique no botão para carregar as fotos!</Text>
         ) : (
-          photos.map((url, index) => (
-            <Image key={index} source={{ uri: url }} style={styles.image} />
-          ))
+          <View style={styles.gridContainer}>
+            {photos.map((url, index) => (
+              <View key={index} style={[styles.card, { width: columnWidth }]}>
+                <Image source={{ uri: url }} style={styles.image} />
+              </View>
+            ))}
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -76,6 +83,19 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     width: "100%",
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    width: '100%',
+    padding: 8,
+  },
+  card: {
+    marginBottom: 10,
+    marginHorizontal: '1%',
+    borderRadius: 10,
+    backgroundColor: '#fff',
   },
   image: {
     width: "100%",
